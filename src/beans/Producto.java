@@ -14,12 +14,15 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.control.Button;
 
 /**
  *
  * @author mq12
  */
 public class Producto {
+
+   
     private IntegerProperty idProducto  =new SimpleIntegerProperty();
      private StringProperty codigoBarras=  new SimpleStringProperty();
      private StringProperty nombre=  new SimpleStringProperty();
@@ -35,9 +38,12 @@ public class Producto {
      private DoubleProperty iva = new SimpleDoubleProperty();
      private DoubleProperty ieps= new SimpleDoubleProperty();
      private BooleanProperty habilitado = new SimpleBooleanProperty();
+     private Button botonAgregar;
+     private Button botonBorrar;
 
     public Producto(int idProducto,String codigoBarras, String nombre, double precioVentaUnitario, double cantidad, String descripcion,
-    double precioProveedor, int categoria_id, double precioMayoreo, String comosevende, boolean inventariar, int minimo, double iva, double ieps, boolean habilitado ) {
+    double precioProveedor, int categoria_id, double precioMayoreo, String comosevende, boolean inventariar, int minimo, double iva, double ieps, boolean habilitado, 
+    Button botonAgregar , Button botonBorrar ) {
         
            this.idProducto  =new SimpleIntegerProperty(idProducto);
        this.codigoBarras=  new SimpleStringProperty(codigoBarras);
@@ -54,6 +60,10 @@ public class Producto {
        this.iva = new SimpleDoubleProperty(iva);
        this.ieps= new SimpleDoubleProperty(ieps);
        this.habilitado = new SimpleBooleanProperty(habilitado);
+       this.botonAgregar = botonAgregar;
+       this.botonBorrar = botonBorrar;
+       this.botonAgregar = new Button("+");
+       this.botonBorrar = new Button("-"); 
         
     }
 
@@ -276,6 +286,32 @@ public class Producto {
     public void setHabilitado(boolean habilitado) {
         this.habilitado.set(habilitado);
     }
-     
+    /**
+     * @return the botonAgregar
+     */
+    public Button getBotonAgregar() {
+        return botonAgregar;
+    }
+
+    /**
+     * @param botonAgregar the botonAgregar to set
+     */
+    public void setBotonAgregar(Button botonAgregar) {
+        this.botonAgregar = botonAgregar;
+    }
+
+    /**
+     * @return the botonBorrar
+     */
+    public Button getBotonBorrar() {
+        return botonBorrar;
+    }
+
+    /**
+     * @param botonBorrar the botonBorrar to set
+     */
+    public void setBotonBorrar(Button botonBorrar) {
+        this.botonBorrar = botonBorrar;
+    }  
     
 }
