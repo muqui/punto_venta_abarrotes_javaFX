@@ -58,7 +58,7 @@ public class VentasController implements Initializable {
 
     @FXML
     void ActionBtnAgregarProducto(ActionEvent event) {
-       // List<Producto> list = new ArrayList<>();
+        // List<Producto> list = new ArrayList<>();
         String codigoBarras = txtCodigoBarras.getText();
         int tabSeleccionado = tabPaneTicket.getSelectionModel().getSelectedIndex(); // Selecciona el tab Seleccionado.
         System.out.println("Tab Seleccionado ............. " + tabSeleccionado);
@@ -79,10 +79,11 @@ public class VentasController implements Initializable {
         int numTabs = tabPaneTicket.getTabs().size() - 1;
         if (numTabs > 0) // elimina todos los tickes exepto el primero
         {
-            tabPaneTicket.getTabs().remove(numTabs);  
+            tabPaneTicket.getTabs().remove(numTabs);
+            tabArrayList.remove(numTabs);
+            listaProductoArrayList.remove(numTabs);
         }
-        tabArrayList.remove(numTabs);
-        listaProductoArrayList.remove(numTabs);
+
     }
 
     /**
