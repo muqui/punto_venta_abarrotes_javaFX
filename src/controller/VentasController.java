@@ -6,6 +6,7 @@
 package controller;
 
 import beans.Producto;
+import dao.tblProducto;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class VentasController implements Initializable {
 
     Producto producto = new Producto();
     ObservableList<Producto> listProducto;
-
+    tblProducto tblProducto = new tblProducto();
     //Estos 3 arraList son para llenar las tablas de venta
     ArrayList<Tab> tabArrayList = new ArrayList<Tab>(); // se crar un array de tabs.
     ArrayList<ObservableList<Producto>> observableListArrayList = new ArrayList<ObservableList<Producto>>(); // Se crea un array de ObsevableList
@@ -57,20 +58,8 @@ public class VentasController implements Initializable {
     }
 
     @FXML
-    void ActionBtnAgregarProducto(ActionEvent event) {
-        // List<Producto> list = new ArrayList<>();
-        String codigoBarras = txtCodigoBarras.getText();
-        int tabSeleccionado = tabPaneTicket.getSelectionModel().getSelectedIndex(); // Selecciona el tab Seleccionado.
-        System.out.println("Tab Seleccionado ............. " + tabSeleccionado);
-        Node selectedContent = tabArrayList.get(tabSeleccionado).getContent();
-        listaProductoArrayList.get(tabSeleccionado).add(new Producto(0, codigoBarras, codigoBarras, 0, 0, codigoBarras, 0, 0, 0, codigoBarras, true, 0, 0, 0, true, new Button(), new Button()));
-        //list.add(new Producto(0, codigoBarras, codigoBarras, 0, 0, codigoBarras, 0, 0, 0, codigoBarras, true, 0, 0, 0, true, new Button(), new Button()));
-        ObservableList<Producto> data = observableListArrayList.get(tabSeleccionado);
-        data = FXCollections.observableList(listaProductoArrayList.get(tabSeleccionado));
-        TableView tableView = (TableView) selectedContent.lookup("#miTabla");
-        tableView.setItems(data);
-        // tableView.getItems().add(new Producto(0, codigoBarras, codigoBarras, 0, 0, codigoBarras, 0, 0, 0, codigoBarras, true, 0, 0, 0, true, new Button(), new Button()));
-
+    void ActionBtnAgregarProducto(ActionEvent event) {       
+        insetarProductoTicket();
     }
 
     @FXML
@@ -99,27 +88,35 @@ public class VentasController implements Initializable {
     public void crearTicket(String nombre) {
         TableView tableView = new TableView();
         tableView.setId("miTabla");
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // NECESARIO PARA CAMBIAR EL ANCHO DE LA TABLA
         int numTabs = tabPaneTicket.getTabs().size();
         TableColumn<Producto, String> column1 = new TableColumn<>("CODIGO");
-        column1.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        column1.setCellValueFactory(new PropertyValueFactory<>("codigoBarras"));
+        column1.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         //COLUMNA
         TableColumn<Producto, String> column2 = new TableColumn<>("NOMBRE");
-        column2.setCellValueFactory(new PropertyValueFactory<>("codigoBarras"));
+        column2.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        column2.setMaxWidth(1f * Integer.MAX_VALUE * 30);
         //COLUMNA
         TableColumn<Producto, String> column3 = new TableColumn<>("PRECIO");
         column3.setCellValueFactory(new PropertyValueFactory<>("codigoBarras"));
+        column3.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         //COLUMNA
         TableColumn<Producto, String> column4 = new TableColumn<>("CANTIDAD");
         column4.setCellValueFactory(new PropertyValueFactory<>("codigoBarras"));
+        column4.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         //COLUMNA
         TableColumn<Producto, String> column5 = new TableColumn<>("TOTAL");
         column5.setCellValueFactory(new PropertyValueFactory<>("codigoBarras"));
+        column5.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         //COLUMNA
         TableColumn<Producto, String> column6 = new TableColumn<>(" ");
         column6.setCellValueFactory(new PropertyValueFactory<>("botonAgregar"));
+        column6.setMaxWidth(1f * Integer.MAX_VALUE * 5);
         //COLUMNA
         TableColumn<Producto, String> column7 = new TableColumn<>(" ");
         column7.setCellValueFactory(new PropertyValueFactory<>("botonBorrar"));
+        column7.setMaxWidth(1f * Integer.MAX_VALUE * 5);
 
         tableView.getColumns().add(column1);
         tableView.getColumns().add(column2);
@@ -142,6 +139,26 @@ public class VentasController implements Initializable {
                 tabArrayList.get(numTabs)
         );
 
+    }
+    
+    /*
+    *
+    * Agrega producto al ticket
+    *
+    */
+    public void insetarProductoTicket(){
+         String codigoBarras = txtCodigoBarras.getText();
+        int tabSeleccionado = tabPaneTicket.getSelectionModel().getSelectedIndex(); // Selecciona el tab Seleccionado.        
+        Node selectedContent = tabArrayList.get(tabSeleccionado).getContent();
+        listaProductoArrayList.get(tabSeleccionado).add(tblProducto.getProducto(codigoBarras));
+        
+        ObservableList<Producto> data = observableListArrayList.get(tabSeleccionado);
+        data = FXCollections.observableList(listaProductoArrayList.get(tabSeleccionado));
+        TableView tableView = (TableView) selectedContent.lookup("#miTabla");
+        tableView.setItems(data);
+        
+        
+        
     }
 
 }

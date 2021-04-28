@@ -8,6 +8,8 @@ package controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,19 +24,18 @@ import javafx.scene.layout.AnchorPane;
  * @author mq12
  */
 public class PrincipalController implements Initializable {
+    Node node;
      @FXML
     private AnchorPane anchorPaneContenido;
       @FXML
     private Button btnVender;
       @FXML
     void actionBtnVender(ActionEvent event) throws IOException {
-        Node node;
-        node = (Node)FXMLLoader.load(getClass().getResource("/views/ventas.fxml"));
-        anchorPaneContenido.getChildren().setAll(node);
+       nodeVentas();
     }
      @FXML
     void actionBtnProductos(ActionEvent event) throws IOException {
-        Node node;
+        
         node = (Node)FXMLLoader.load(getClass().getResource("/views/Productos.fxml"));
         anchorPaneContenido.getChildren().setAll(node);
     }
@@ -44,8 +45,15 @@ public class PrincipalController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-        
+        nodeVentas();
     }    
-    
+     private void nodeVentas(){
+         try {
+           
+        node = (Node)FXMLLoader.load(getClass().getResource("/views/ventas.fxml"));
+        anchorPaneContenido.getChildren().setAll(node);
+         } catch (IOException ex) {
+             Logger.getLogger(PrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+         }
+    }
 }
