@@ -6,18 +6,22 @@
 package controller;
 
 import beans.Producto;
+import com.sun.javafx.scene.control.skin.TableHeaderRow;
 import dao.tblProducto;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
@@ -45,6 +49,8 @@ public class VentasController implements Initializable {
     private TextField txtCodigoBarras;
 
     @FXML
+    private Label labelTotal;
+    @FXML
     TabPane tabPaneTicket;
 
     @FXML
@@ -58,7 +64,7 @@ public class VentasController implements Initializable {
     }
 
     @FXML
-    void ActionBtnAgregarProducto(ActionEvent event) {       
+    void ActionBtnAgregarProducto(ActionEvent event) {
         insetarProductoTicket();
     }
 
@@ -89,9 +95,23 @@ public class VentasController implements Initializable {
         TableView tableView = new TableView();
         tableView.setId("miTabla");
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // NECESARIO PARA CAMBIAR EL ANCHO DE LA TABLA
+        //evita el reordenamiento( las columnas no se mueven de lugar).
+        tableView.widthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> source, Number oldWidth, Number newWidth) {
+                TableHeaderRow header = (TableHeaderRow) tableView.lookup("TableHeaderRow");
+                header.reorderingProperty().addListener(new ChangeListener<Boolean>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                        header.setReordering(false);
+                    }
+                });
+            }
+        });
         int numTabs = tabPaneTicket.getTabs().size();
         TableColumn<Producto, String> column1 = new TableColumn<>("CODIGO");
         column1.setCellValueFactory(new PropertyValueFactory<>("codigoBarras"));
+        column1.setResizable(true);
         column1.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         //COLUMNA
         TableColumn<Producto, String> column2 = new TableColumn<>("NOMBRE");
@@ -99,15 +119,15 @@ public class VentasController implements Initializable {
         column2.setMaxWidth(1f * Integer.MAX_VALUE * 30);
         //COLUMNA
         TableColumn<Producto, String> column3 = new TableColumn<>("PRECIO");
-        column3.setCellValueFactory(new PropertyValueFactory<>("codigoBarras"));
+        column3.setCellValueFactory(new PropertyValueFactory<>("precioVentaUnitario"));
         column3.setMaxWidth(1f * Integer.MAX_VALUE * 20);
         //COLUMNA
         TableColumn<Producto, String> column4 = new TableColumn<>("CANTIDAD");
-        column4.setCellValueFactory(new PropertyValueFactory<>("codigoBarras"));
+        column4.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
         column4.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         //COLUMNA
         TableColumn<Producto, String> column5 = new TableColumn<>("TOTAL");
-        column5.setCellValueFactory(new PropertyValueFactory<>("codigoBarras"));
+        column5.setCellValueFactory(new PropertyValueFactory<>("totalTicket"));
         column5.setMaxWidth(1f * Integer.MAX_VALUE * 10);
         //COLUMNA
         TableColumn<Producto, String> column6 = new TableColumn<>(" ");
@@ -140,25 +160,74 @@ public class VentasController implements Initializable {
         );
 
     }
-    
+
     /*
     *
     * Agrega producto al ticket
     *
-    */
-    public void insetarProductoTicket(){
-         String codigoBarras = txtCodigoBarras.getText();
-        int tabSeleccionado = tabPaneTicket.getSelectionModel().getSelectedIndex(); // Selecciona el tab Seleccionado.        
+     */
+    public void insetarProductoTicket() {
+
+        String codigoBarras = txtCodigoBarras.getText();
+        int tabSeleccionado = tabPaneTicket.getSelectionModel().getSelectedIndex(); // Selecciona el tab Seleccionado.    
+        boolean existe = existeProductoEnticket(tabSeleccionado, codigoBarras);
         Node selectedContent = tabArrayList.get(tabSeleccionado).getContent();
-        listaProductoArrayList.get(tabSeleccionado).add(tblProducto.getProducto(codigoBarras));
-        
+        if (listaProductoArrayList.get(tabSeleccionado).size() <= 0) {
+            listaProductoArrayList.get(tabSeleccionado).add(setAmount(codigoBarras)); // add producto to list
+        } else {
+            if (existe == false) { // if product doesn't exist add it to ticket             
+                listaProductoArrayList.get(tabSeleccionado).add(setAmount(codigoBarras)); // add producto to list
+            }
+        }
+        System.out.println("total ticket" + totalTicket(tabSeleccionado));
+       labelTotal.setText(""+totalTicket(tabSeleccionado));
         ObservableList<Producto> data = observableListArrayList.get(tabSeleccionado);
         data = FXCollections.observableList(listaProductoArrayList.get(tabSeleccionado));
+
         TableView tableView = (TableView) selectedContent.lookup("#miTabla");
+
         tableView.setItems(data);
-        
-        
-        
+        tableView.refresh();
+    }
+
+    /*
+    * Return Producto from database but update amonut to 1, set the amount total.
+     */
+    private Producto setAmount(String codigoBarras) {
+        Producto p = tblProducto.getProducto(codigoBarras); // get Producto from dababase
+        p.setTotalTicket(p.getPrecioVentaUnitario());
+        p.setCantidad(1); // update amount to one
+        return p;
+    }
+
+    /*
+    * Check if exist product in ticket
+     */
+    private boolean existeProductoEnticket(int tabSeleccionado, String codigoBarras) {
+        boolean existe = false;
+        for (int i = 0; i < listaProductoArrayList.get(tabSeleccionado).size(); i++) {
+            Producto p = listaProductoArrayList.get(tabSeleccionado).get(i);
+            if (p.getCodigoBarras().equalsIgnoreCase(codigoBarras)) {
+
+                double cantidad = p.getCantidad() + 1;
+                double total = cantidad * p.getPrecioVentaUnitario();
+
+                p.setCantidad(cantidad);
+                p.setTotalTicket(total);
+                existe = true;
+                break;
+            }
+        }
+        return existe;
+    }
+
+    private double totalTicket(int tabSeleccionado) {
+        double total = 0;
+        for (int i = 0; i < listaProductoArrayList.get(tabSeleccionado).size(); i++) {
+            Producto p = listaProductoArrayList.get(tabSeleccionado).get(i);
+            total = total + p.getTotalTicket();
+        }
+        return total;
     }
 
 }

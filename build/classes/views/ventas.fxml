@@ -26,7 +26,7 @@
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <Label layoutX="652.0" layoutY="492.0" text="\$ 0" textFill="#200fe1" AnchorPane.bottomAnchor="35.0" AnchorPane.rightAnchor="23.0">
+      <Label fx:id="labelTotal" layoutX="652.0" layoutY="492.0" text="\$ 0" textFill="#200fe1" AnchorPane.bottomAnchor="35.0" AnchorPane.rightAnchor="23.0">
          <font>
             <Font name="System Bold" size="24.0" />
          </font>

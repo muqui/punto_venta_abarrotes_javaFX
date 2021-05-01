@@ -38,6 +38,7 @@ public class Producto {
      private DoubleProperty iva = new SimpleDoubleProperty();
      private DoubleProperty ieps= new SimpleDoubleProperty();
      private BooleanProperty habilitado = new SimpleBooleanProperty();
+     private DoubleProperty totalTicket = new SimpleDoubleProperty();
      private Button botonAgregar;
      private Button botonBorrar;
 
@@ -258,7 +259,19 @@ public class Producto {
     public void setIva(double iva) {
         this.iva.set(iva);
     }
+     /**
+     * @return the totalTicket
+     */
+    public double getTotalTicket() {
+        return totalTicket.get();
+    }
 
+    /**
+     * @param totalTicket the totalTicket to set
+     */
+    public void setTotalTicket(double totalTicket) {
+        this.totalTicket.set(totalTicket);
+    }
     /**
      * @return the ieps
      */
@@ -313,5 +326,7 @@ public class Producto {
     public void setBotonBorrar(Button botonBorrar) {
         this.botonBorrar = botonBorrar;
     }  
+
+   
     
 }
